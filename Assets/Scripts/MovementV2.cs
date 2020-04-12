@@ -16,6 +16,7 @@ public class MovementV2 : MonoBehaviour
     public int attackDamage = 20;
     public float attackSpeed = 2f;
     private float nextAttack = 0f;
+    public float knockback = 2f;
     public bool grounded = false;
     public bool airCheck = false;
     public bool airDodge = false;
@@ -62,13 +63,15 @@ public class MovementV2 : MonoBehaviour
 
     void Rotate()
     {
+        //Rotate Right
         if(Input.GetAxis("Horizontal") > 0 && grounded == true)
         {
-            spriteRenderer.flipX = true;
+            transform.localScale = new Vector3(-1f, 1f, 1f);
         }
+        //Rotate Left
         else if(Input.GetAxis("Horizontal") < 0 && grounded == true)
         {
-            spriteRenderer.flipX = false;
+            transform.localScale = new Vector3(1f, 1f, 1f);
         }
     }
 
@@ -76,17 +79,31 @@ public class MovementV2 : MonoBehaviour
     {
         Vector2 jumpVector = new Vector2(0f, jumpSpeed);
         gameObject.GetComponent<Rigidbody2D>().AddForce(jumpVector, ForceMode2D.Impulse);
+        FindObjectOfType<AudioManager>().Play("Jump");
         //animation.SetTrigger("Jump");
     }
 
     void Attack()
     {
         animation.SetTrigger("Attack");
+        FindObjectOfType<AudioManager>().Play("SwordSlash_01");
         Collider2D[] onHit = Physics2D.OverlapCircleAll(attackHitBox.position, attackRange, enemyLayers);
+        Vector2 knockbackVector = new Vector2(knockback, 0f);
         foreach(Collider2D enemy in onHit)
         {
             Debug.Log("We hit" + enemy.name);
             enemy.GetComponent<Humanoid>().DamageTaken(attackDamage);
+            //enemy.transform.position += knockbackVector;
+            //Knockback
+            // Facing Left (Attacking from Right side of enemy)
+            if(transform.localScale.x == 1)
+            {
+                enemy.GetComponent<Rigidbody2D>().AddForce(-knockbackVector, ForceMode2D.Impulse);
+            }
+            else if(transform.localScale.x == -1)
+            {
+                enemy.GetComponent<Rigidbody2D>().AddForce(knockbackVector, ForceMode2D.Impulse);
+            }
         }
     }
 

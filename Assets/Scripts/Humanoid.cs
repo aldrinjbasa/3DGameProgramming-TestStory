@@ -23,6 +23,7 @@ public class Humanoid : MonoBehaviour
     {
         currentHealth -= damage;
         animation.SetTrigger("onHit");
+        FindObjectOfType<AudioManager>().Play("OnHit");
 
         if(currentHealth < 0)
         {
@@ -33,6 +34,7 @@ public class Humanoid : MonoBehaviour
     void Die()
     {
         animation.SetTrigger("onDeath");
+        FindObjectOfType<AudioManager>().Play("Death");
         GetComponent<BoxCollider2D>().enabled = false;
         GetComponent<CircleCollider2D>().enabled = false;
         this.enabled = false;
