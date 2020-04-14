@@ -8,7 +8,10 @@ public class MovementV2 : MonoBehaviour
     public Animator animation;
     public Transform attackHitBox;
     public LayerMask enemyLayers;
+    public LayerMask platformLayers;
     public SpriteRenderer spriteRenderer;
+    public GameObject ceilingCheck;
+    public GameObject groundCheck;
     public float moveSpeed = 6f;
     public float jumpSpeed = 10f;
     public float airDodgeSpeed = 10f;
@@ -22,7 +25,7 @@ public class MovementV2 : MonoBehaviour
     public bool airDodge = false;
     void Start()
     {
-        Player = gameObject.transform.parent.gameObject;
+        //Player = gameObject.transform.parent.gameObject;
     }
 
     void Update()
@@ -45,6 +48,7 @@ public class MovementV2 : MonoBehaviour
 
         WaveDash();
         Rotate();
+        SuperJump();
     }
     void HorizontalMovement()
     {
@@ -86,20 +90,23 @@ public class MovementV2 : MonoBehaviour
     void Attack()
     {
         animation.SetTrigger("Attack");
-        FindObjectOfType<AudioManager>().Play("SwordSlash_01");
+        FindObjectOfType<AudioManager>().Play("SwordSlash_01"); //Play Sword Slash
         Collider2D[] onHit = Physics2D.OverlapCircleAll(attackHitBox.position, attackRange, enemyLayers);
         Vector2 knockbackVector = new Vector2(knockback, 0f);
         foreach(Collider2D enemy in onHit)
         {
+            int damageCalculation = attackDamage + Random.Range(1, 80);
             Debug.Log("We hit" + enemy.name);
-            enemy.GetComponent<Humanoid>().DamageTaken(attackDamage);
-            //enemy.transform.position += knockbackVector;
+            enemy.GetComponent<Humanoid_Enemy>().DamageTaken(damageCalculation);
+            FindObjectOfType<DamageManager>().ShowDamage(damageCalculation, enemy.transform);
+            damageCalculation = attackDamage;
             //Knockback
             // Facing Left (Attacking from Right side of enemy)
             if(transform.localScale.x == 1)
             {
                 enemy.GetComponent<Rigidbody2D>().AddForce(-knockbackVector, ForceMode2D.Impulse);
             }
+            // Facing Right (Attacking from Left side of enemy)
             else if(transform.localScale.x == -1)
             {
                 enemy.GetComponent<Rigidbody2D>().AddForce(knockbackVector, ForceMode2D.Impulse);
@@ -124,14 +131,44 @@ public class MovementV2 : MonoBehaviour
         }
     }
 
+    void SuperJump()
+    {
+        if(Input.GetKey(KeyCode.UpArrow) && Input.GetKey(KeyCode.LeftAlt) && grounded == true)
+        {
+            gameObject.GetComponent<Rigidbody2D>().AddForce(new Vector2(0f, 5f), ForceMode2D.Impulse);
+            //gameObject.GetComponent<BoxCollider2D>().enabled = false;
+            //StartCoroutine(waitEnableBoxCollider(1));
+        }
+        /*Collider2D[] onCeilingCollide = Physics2D.OverlapCircleAll(ceilingCheck.transform.position, 1f, platformLayers);
+        foreach(Collider2D platforms in onCeilingCollide)
+        {
+            gameObject.GetComponent<BoxCollider2D>().enabled = false;
+        }*/
+    }
+
+    IEnumerator waitEnableBoxCollider(int seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+        gameObject.GetComponent<BoxCollider2D>().enabled = true;
+    }
+
     //Check if player is touching the ground
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        
         if (collision.collider.tag == "Ground")
         {
             grounded = true;
             airCheck = false;
             airDodge = false;
+            /*if(gameObject.GetComponent<BoxCollider2D>().enabled == false)
+            {
+                gameObject.GetComponent<BoxCollider2D>().enabled = true;
+            }*/
+        }
+        else if(collision.collider.tag == "Enemy")
+        {
+            GetComponent<Humanoid_Player>().DamageTaken(attackDamage);
         }
     }
 
