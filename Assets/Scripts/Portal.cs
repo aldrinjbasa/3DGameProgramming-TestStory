@@ -33,6 +33,7 @@ public class Portal : MonoBehaviour
         if(collision.CompareTag("Player"))
         {
             teleportable = true;
+            FindObjectOfType<AudioManager>().Play("Portal");
         }
     }
     private void OnTriggerExit2D(Collider2D collision)

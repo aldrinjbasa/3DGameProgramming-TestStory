@@ -14,6 +14,7 @@ public class MainMenu : MonoBehaviour
     }
     public void StartGame()
     {
+        FindObjectOfType<AudioManager>().Play("PlayButton");
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
     public void ExitGame()
