@@ -182,6 +182,24 @@ public class MovementV2 : MonoBehaviour
         }
     }
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.gameObject.layer == LayerMask.NameToLayer("Platform"))
+        {
+            Physics2D.IgnoreCollision(GameObject.Find("Player").GetComponent<Collider2D>(), collision, true);
+        }
+        if(collision.gameObject.layer == LayerMask.NameToLayer("OutOfBounds"))
+        {
+            Vector3 startPosition = new Vector3(-0.0160647f, -2.685229f, -0.1269531f);
+            GameObject.Find("Player").transform.position = startPosition;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        Physics2D.IgnoreCollision(GameObject.Find("Player").GetComponent<Collider2D>(), collision, false);
+    }
+
     private void OnDrawGizmosSelected()
     {
         if(attackHitBox == null)

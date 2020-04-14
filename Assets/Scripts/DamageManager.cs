@@ -27,7 +27,6 @@ public class DamageManager : MonoBehaviour
             //Make an array based off of the modulo
             damageArray.Add(damageDigit);
             currentDivision = currentDivision / 10;
-            //Iterate backwards
         }
         foreach(int digitInArray in damageArray)
         {
@@ -37,7 +36,7 @@ public class DamageManager : MonoBehaviour
             digitDisplay.AddComponent<Rigidbody2D>();
             digitDisplay.GetComponent<SpriteRenderer>().name = digitInArray.ToString();
             digitDisplay.GetComponent<SpriteRenderer>().sprite = damageNumbers[digitInArray].damageSprite;
-            digitDisplay.GetComponent<SpriteRenderer>().sortingOrder = 1; //Plays on top of enemy
+            digitDisplay.GetComponent<SpriteRenderer>().sortingOrder = 2; //Plays on top of enemy
             digitDisplay.GetComponent<Rigidbody2D>().gravityScale = -0.1f;
             digitDisplay.transform.SetParent(enemy);
             digitDisplay.transform.position = displayVector;

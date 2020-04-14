@@ -9,10 +9,12 @@ public class Humanoid_Player : MonoBehaviour
     public float knockback = 5f;
     public Animator animation;
     public GameObject healthBar;
+    public int score;
 
     void Start()
     {
         currentHealth = maxHealth;
+        score = 0;
     }
 
     // Update is called once per frame
@@ -43,7 +45,7 @@ public class Humanoid_Player : MonoBehaviour
         animation.SetTrigger("onDeath");
         FindObjectOfType<AudioManager>().Play("Death");
         GetComponent<BoxCollider2D>().enabled = false;
-        GetComponent<CircleCollider2D>().enabled = false;
+        //GetComponent<CircleCollider2D>().enabled = false;
         this.enabled = false;
     }
 
